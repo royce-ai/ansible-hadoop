@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+    <!-- 指定MapReduce程序运行在Yarn上 -->
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+    <!-- 历史服务器端地址 -->
+    <property>
+        <name>mapreduce.jobhistory.address</name>
+        <value>mr_history:10020</value>
+    </property>
+
+    <!-- 历史服务器web端地址 -->
+    <property>
+        <name>mapreduce.jobhistory.webapp.address</name>
+        <value>mr_history:19888</value>
+    </property>
+    <property>
+        <name>yarn.app.mapreduce.am.resource.mb</name>
+        <value>512</value>
+    </property>
+    <property>
+        <name>mapreduce.map.memory.mb</name>
+        <value>256</value>
+    </property>
+    <property>
+        <name>mapreduce.reduce.memory.mb</name>
+        <value>256</value>
+    </property>
+</configuration>
