@@ -1,0 +1,15 @@
+[Unit]
+Description=Apache Yarn NodeManager
+After=network.target
+Wants=network.target
+
+[Service]
+Type=forking
+Environment=JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.372.b07-1.el7_9.x86_64
+ExecStart=/opt/hadoop/bin/yarn --daemon start nodemanager
+ExecStop=/opt/hadoop/bin/yarn --daemon stop nodemanager
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
