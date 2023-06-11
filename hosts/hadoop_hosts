@@ -1,0 +1,6 @@
+[hadoop_nodes]
+namenode1 ansible_host=namenode1 ansible_ssh_user=root
+namenode2 ansible_host=namenode2 ansible_ssh_user=root
+datanode1 ansible_host=datanode1 ansible_ssh_user=root
+datanode2 ansible_host=datanode2 ansible_ssh_user=root
+datanode3 ansible_host=datanode3 ansible_ssh_user=root
