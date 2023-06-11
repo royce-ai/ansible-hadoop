@@ -1,0 +1,88 @@
+---
+- name: Install HadoopHA
+  hosts: all
+  become: true
+  tasks:
+    - name: Install wget
+      yum:
+        name: wget
+        state: present
+    - name: Download Hadoop
+      get_url:
+        url: "https://mirrors.tuna.tsinghua.edu.cn/apache/hadoop/common/hadoop-3.3.1/hadoop-3.3.1.tar.gz"
+        dest: /tmp/hadoop-3.3.1.tar.gz
+        mode: 0644
+
+    - name: Extract Hadoop
+      unarchive:
+        src: /tmp/hadoop-3.3.1.tar.gz
+        dest: /opt
+        remote_src: 'yes'
+
+    - name: Rename Hadoop folder
+      command: mv /opt/hadoop-3.3.1 /opt/hadoop creates=/opt/hadoop
+    - name: Configure Hadoop environment
+      template:
+        src: /home/hadoop/ansible-lists/hadoop/templates/hadoop_sh.j2
+        dest: /etc/profile.d/hadoop.sh
+        mode: 0644
+    - name: Create Hadoop directories
+      file:
+        path: '{{ item }}'
+        state: directory
+        owner: hadoop
+        group: hadoops
+        mode: 0755
+      loop:
+        - /var/lib/hadoop
+        - /var/log/hadoop
+        - /var/log/hadoop/data
+        - /var/lib/hadoop/journal
+        - /var/lib/hadoop/data
+    - name: Configure Hadoop environment
+      template:
+        src: /home/hadoop/ansible-lists/hadoop/templates/hadoop-env.sh.j2
+        dest: /opt/hadoop/etc/hadoop/hadoop-env.sh
+        mode: 0644
+    - name: Configure Hadoop workers
+      template:
+        src: /home/hadoop/ansible-lists/hadoop/templates/workers.j2
+        dest: /opt/hadoop/etc/hadoop/workers
+        mode: 0644
+    - name: Configure Hadoop Confs
+      template:
+        src: '/home/hadoop/ansible-lists/hadoop/templates/{{ item }}.j2'
+        dest: '/opt/hadoop/etc/hadoop/{{item}}'
+        mode: 0644
+      loop:
+        - core-site.xml
+        - yarn-site.xml
+        - hdfs-site.xml
+        - mapred-site.xml
+    - name: Configure Hadoop systemd services
+      template:
+        src: '/home/hadoop/ansible-lists/hadoop/templates/{{ item }}.j2'
+        dest: '/etc/systemd/system/{{ item }}'
+        mode: 0644
+      loop:
+        - hadoop-hdfs-namenode.service
+        - hadoop-hdfs-datanode.service
+        - hadoop-yarn-resourcemanager.service
+        - hadoop-yarn-nodemanager.service
+        - hadoop-hdfs-journalnode.service
+        - hadoop-hdfs-mapredhistory.service
+        - hadoop-hdfs-zkfc.service
+    - name: Reload and Enable Hadoop services
+      systemd:
+        name: '{{ item }}'
+        daemon_reload: 'yes'
+        enabled: 'yes'
+      loop:
+        - hadoop-hdfs-namenode
+        - hadoop-hdfs-datanode
+        - hadoop-yarn-resourcemanager
+        - hadoop-yarn-nodemanager
+        - hadoop-hdfs-journalnode
+        - hadoop-hdfs-mapredhistory
+        - hadoop-hdfs-zkfc
+...
